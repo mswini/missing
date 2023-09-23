@@ -62,34 +62,40 @@
 		}
 	}
 	var start = () => {
-		var nums = [...Array(93).keys()];
-		var holes = [...Array(6).keys()].sort(()=>Math.random()-.5).slice(1, 5);
+		const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
+		var steps = [1,1,2,2,5,2,5,2,5,5,10,1,2,2,5,2,10,10,5,5].sort(()=>Math.random()-.5)[0];
+		var nums = range(10, 100, steps);
+		var howManyHoles = [4,5,4,4,5,4,4,5,4,4,5,4,5].sort(()=>Math.random()-.5)[0];
+		var holes = [...Array(6).keys()].sort(()=>Math.random()-.5).slice(0, howManyHoles);
 		var startNum = nums[Math.floor(Math.random()*nums.length)];
 		var sequence = [];
-		for(i=startNum;i<startNum+7;i++){
-			sequence.push(i);
-		}
-		for(i=0;i<inp.length;i++){
-			inp[i].value = inp[i].dataset['ans'] = sequence[i];
-			if(holes.includes(i)){
-				inp[i].value = '';
-				inp[i].addEventListener('keydown',function(e){
-					if(this.value!="" && e.keyCode==13 && this.value==this.dataset['ans']){
-						checking();
-					}
-				});
-				inp[i].addEventListener('blur',function(){
-					if(this.value!="" && this.value!=this.dataset['ans']){
-						this.value = '';
-						speak('Not correct!');
-						lastAns = false;
-						setTimeout(()=>{this.focus();},500);
-					}
-					else {
-						checking();
-					}
-				});
+		sequence = nums;
+		if(sequence[0]>0){
+			for(i=0;i<inp.length;i++){
+				inp[i].value = inp[i].dataset['ans'] = sequence[i];
+				if(holes.includes(i)){
+					inp[i].value = '';
+					inp[i].addEventListener('keydown',function(e){
+						if(this.value!="" && e.keyCode==13 && this.value==this.dataset['ans']){
+							checking();
+						}
+					});
+					inp[i].addEventListener('blur',function(){
+						if(this.value!="" && this.value!=this.dataset['ans']){
+							this.value = '';
+							speak('Not correct!');
+							lastAns = false;
+							setTimeout(()=>{this.focus();},500);
+						}
+						else {
+							checking();
+						}
+					});
+				}
 			}
+		}
+		else {
+			start();
 		}
 	}
 	start();
