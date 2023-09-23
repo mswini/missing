@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Missing Numbers</title>
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="apple-touch-icon" href="favicon.ico" />
+		<link rel="apple-touch-icon-precomposed" href="favicon.ico" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+		<meta name="viewport" content="user-scalable=no, width=device-width" />
+		<meta name="viewport" content="minimum-scale=1.0,width=device-width,maximum-scale=1,user-scalable=no" />
+		<style>
+			body {margin:0 auto;padding:0}
+			fieldset {border:0;outline:0;}
+			fieldset input {width:6vw;height:6vw;padding:1vw;font-size:4vw;margin:2vw;text-align:center}
+			@media (max-width: 1000px) {
+				fieldset input {font-size:3.5vw;margin:1.5vw}
+			}
+		</style>
+	</head>
+	<body>
+		<fieldset>
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+		</fieldset>
+	</body>
+</html>
+<script>
+
+	var congratulation = () => {
+		timer = setTimeout(function(){
+			document.body.style.backgroundColor = document.body.style.backgroundColor=="white"?"whitesmoke":"white";
+			congratulation();
+		},200);
+	}
+	var speak = (txt) => {
+		var word = new SpeechSynthesisUtterance(txt)
+		word.lang = 'en';
+		word.rate = 1;
+		speechSynthesis.speak(word);
+	};
+
+	start = () => {
+		var inp = document.querySelectorAll('fieldset input');
+		var nums = [...Array(93).keys()];
+		var holes = [...Array(6).keys()].sort(()=>Math.random()-.5).slice(1, 5);
+		var startNum = nums[Math.floor(Math.random()*nums.length)];
+		var sequence = [];
+		for(i=startNum;i<startNum+7;i++){
+			sequence.push(i);
+		}
+		for(i=0;i<inp.length;i++){
+			inp[i].value = inp[i].dataset['ans'] = sequence[i];
+			if(holes.includes(i)){
+				inp[i].value = '';
+				inp[i].addEventListener('blur',function(){
+					if(this.value!="" && this.value!=this.dataset['ans']){
+						this.value = '';
+						speak('Not correct!');
+						lastAns = false;
+						setTimeout(()=>{this.focus();},500);
+					}
+					else {
+						var allAnswered = true;
+						[...inp].forEach(obj=>{
+							if(obj.value=="") {
+								allAnswered = false;
+							}
+						});
+						if(allAnswered == true) {
+							speak('Congratulation');
+							congratulation();
+							setTimeout(function(){
+								clearTimeout(timer);
+								document.body.style.backgroundColor = "white";
+								start();
+							},2000);
+						}
+					}
+				});
+			}
+		}
+	}
+	start();
+</script>
