@@ -31,7 +31,7 @@
 	</body>
 </html>
 <script>
-
+	var inp = document.querySelectorAll('fieldset input');
 	var congratulation = () => {
 		timer = setTimeout(function(){
 			document.body.style.backgroundColor = document.body.style.backgroundColor=="white"?"whitesmoke":"white";
@@ -44,9 +44,24 @@
 		word.rate = 1;
 		speechSynthesis.speak(word);
 	};
-
-	start = () => {
-		var inp = document.querySelectorAll('fieldset input');
+	var checking = () => {
+		var allAnswered = true;
+		[...inp].forEach(obj=>{
+			if(obj.value=="") {
+				allAnswered = false;
+			}
+		});
+		if(allAnswered == true) {
+			speak('Congratulation');
+			congratulation();
+			setTimeout(function(){
+				clearTimeout(timer);
+				document.body.style.backgroundColor = "white";
+				start();
+			},2000);
+		}
+	}
+	var start = () => {
 		var nums = [...Array(93).keys()];
 		var holes = [...Array(6).keys()].sort(()=>Math.random()-.5).slice(1, 5);
 		var startNum = nums[Math.floor(Math.random()*nums.length)];
@@ -58,6 +73,11 @@
 			inp[i].value = inp[i].dataset['ans'] = sequence[i];
 			if(holes.includes(i)){
 				inp[i].value = '';
+				inp[i].addEventListener('keydown',function(e){
+					if(this.value!="" && e.keyCode==13 && this.value==this.dataset['ans']){
+						checking();
+					}
+				});
 				inp[i].addEventListener('blur',function(){
 					if(this.value!="" && this.value!=this.dataset['ans']){
 						this.value = '';
@@ -66,21 +86,7 @@
 						setTimeout(()=>{this.focus();},500);
 					}
 					else {
-						var allAnswered = true;
-						[...inp].forEach(obj=>{
-							if(obj.value=="") {
-								allAnswered = false;
-							}
-						});
-						if(allAnswered == true) {
-							speak('Congratulation');
-							congratulation();
-							setTimeout(function(){
-								clearTimeout(timer);
-								document.body.style.backgroundColor = "white";
-								start();
-							},2000);
-						}
+						checking();
 					}
 				});
 			}
