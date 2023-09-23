@@ -75,12 +75,11 @@
 	var start = () => {
 		finished = false;
 		const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
-		var steps = [1,2,3,4,5,10].sort(()=>Math.random()-.5)[0];	
 		var nums = range(
 			[...Array(60).keys()].sort(()=>Math.random()-.5)[0]
-		, 100, steps);
-		var howManyHoles = [4,5].sort(()=>Math.random()-.5)[0];
-		var holes = [6,0,1,2,3,4,4,5,5,5,6,6].sort(()=>Math.random()-.5).slice(1, howManyHoles);
+		, 100, 1);
+		var holes = [...Array(7).keys()].sort(()=>Math.random()-.5).slice(1, 6);
+		holes.unshift(0);
 		var startNum = nums[Math.floor(Math.random()*nums.length)];
 		var sequence = [];
 		sequence = nums;
