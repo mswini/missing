@@ -15,6 +15,8 @@
 			fieldset input {width:6vw;height:6vw;padding:1vw;font-size:4vw;margin:2vw;text-align:center}
 			div {text-align:center;margin-top:2vw}
 			button {font-size:3vw}
+			input::-webkit-outer-spin-button,input::-webkit-inner-spin-button {-webkit-appearance: none;margin: 0;}
+			input[type=number] {-moz-appearance: textfield;}
 			@media (max-width: 1000px) {
 				fieldset input {font-size:3.5vw;margin:1.5vw}
 				div {margin-top:4vw}
@@ -24,19 +26,21 @@
 	</head>
 	<body>
 		<fieldset>
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
-			<input type="text" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
+			<input type="number" data-ans="" value="" autocomplete="off" autocorrect="off">
 		</fieldset>
 		<div><button onclick="start()">&#8634;</button></div>
 	</body>
 </html>
 <script>
 	var inp = document.querySelectorAll('fieldset input');
+	var finished = false;
+	var timer = 0;
 	var congratulation = () => {
 		timer = setTimeout(function(){
 			document.body.style.backgroundColor = document.body.style.backgroundColor=="white"?"whitesmoke":"white";
@@ -56,7 +60,9 @@
 				allAnswered = false;
 			}
 		});
-		if(allAnswered == true) {
+		if(allAnswered == true && !finished) {
+			finished = true;
+			clearTimeout(timer);
 			speak('Congratulation');
 			congratulation();
 			setTimeout(function(){
@@ -67,11 +73,14 @@
 		}
 	}
 	var start = () => {
+		finished = false;
 		const range = (start, stop, step) => Array.from({ length: (stop - start) / step + 1 }, (_, i) => start + i * step);
-		var steps = [1,1,2,2,5,2,5,2,5,5,10,1,2,2,5,2,10,10,5,5].sort(()=>Math.random()-.5)[0];
-		var nums = range(10, 100, steps);
-		var howManyHoles = [4,5,4,4,5,4,4,5,4,4,5,4,5].sort(()=>Math.random()-.5)[0];
-		var holes = [...Array(6).keys()].sort(()=>Math.random()-.5).slice(0, howManyHoles);
+		var steps = [1,2,3,4,5,10].sort(()=>Math.random()-.5)[0];	
+		var nums = range(
+			[...Array(60).keys()].sort(()=>Math.random()-.5)[0]
+		, 100, steps);
+		var howManyHoles = [4,5].sort(()=>Math.random()-.5)[0];
+		var holes = [6,0,1,2,3,4,4,5,5,5,6,6].sort(()=>Math.random()-.5).slice(1, howManyHoles);
 		var startNum = nums[Math.floor(Math.random()*nums.length)];
 		var sequence = [];
 		sequence = nums;
@@ -84,12 +93,15 @@
 						if(this.value!="" && e.keyCode==13 && this.value==this.dataset['ans']){
 							checking();
 						}
+						else if(e.keyCode==13) {
+							speak('Not correct!');
+							setTimeout(()=>{this.focus();},500);
+						}
 					});
 					inp[i].addEventListener('blur',function(){
 						if(this.value!="" && this.value!=this.dataset['ans']){
 							this.value = '';
 							speak('Not correct!');
-							lastAns = false;
 							setTimeout(()=>{this.focus();},500);
 						}
 						else {
